@@ -16,6 +16,10 @@ public class Juego {
  this.puntuacion = puntuacion; 
  this.estado = estado; 
  } 
+
+    public Juego() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
  public int getId() { return id; } 
  public void setId(int id) { this.id = id; } 
  public String getTitulo() { return titulo; } 
