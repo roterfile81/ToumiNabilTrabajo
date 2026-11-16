@@ -200,17 +200,18 @@ public class JuegoDAO {
     // ── MAPEAR ResultSet → Juego ──────────────────────────────
 
     // Convierte una fila de la base de datos en un objeto Juego
-    private Juego mapear(ResultSet r) throws SQLException {
-        Juego j = new Juego();
+ 
+private Juego mapear(ResultSet r) throws SQLException {
+    Juego j = new Juego();
 
-        j.setId(r.getInt("id"));
-        j.setTitulo(r.getString("titulo"));
-        j.setConsola(r.getString("consola"));
-        j.setGenero(r.getString("genero"));
-        j.setAnio(r.getInt("anio"));
-        j.setPuntuacion(r.getInt("puntuacion"));
-        j.setEstado(r.getString("estado"));
+    j.setId(r.getInt("id"));
+    j.setTitulo(r.getString("titulo"));
+    j.setConsola(r.getString("consola"));
+    j.setGenero(r.getString("genero"));
+    j.setAnio(r.getInt("anio"));
+    j.setPuntuacion(r.getInt("puntuacion"));
+    j.setEstado(r.getString("estado"));
 
-        return j;
-    }
+    return j;
+}
 }
