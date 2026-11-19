@@ -39,6 +39,14 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         btnAnyadir = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         tablaJuegos = new javax.swing.JTable();
+        panelEstadisticas = new javax.swing.JPanel();
+        lblTotal = new javax.swing.JLabel();
+        lblCompletados = new javax.swing.JLabel();
+        lblMedia = new javax.swing.JLabel();
+        jMenuBar1 = new javax.swing.JMenuBar();
+        jMenu1 = new javax.swing.JMenu();
+        mniSalir = new javax.swing.JMenuItem();
+        mnJuegos = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -87,6 +95,31 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
         getContentPane().add(jScrollPane1, java.awt.BorderLayout.CENTER);
 
+        panelEstadisticas.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+
+        lblTotal.setText("Total: 0");
+        panelEstadisticas.add(lblTotal);
+
+        lblCompletados.setText("| Completados: 0");
+        panelEstadisticas.add(lblCompletados);
+
+        lblMedia.setText("| Puntuación media: -");
+        panelEstadisticas.add(lblMedia);
+
+        getContentPane().add(panelEstadisticas, java.awt.BorderLayout.PAGE_END);
+
+        jMenu1.setText("Archivo");
+
+        mniSalir.setText("Salir");
+        jMenu1.add(mniSalir);
+
+        jMenuBar1.add(jMenu1);
+
+        mnJuegos.setText("Juegos");
+        jMenuBar1.add(mnJuegos);
+
+        setJMenuBar(jMenuBar1);
+
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
@@ -123,8 +156,16 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private javax.swing.JButton btnLimpiar;
     private javax.swing.JComboBox<String> cmbConsola;
     private javax.swing.JComboBox<String> cmbEstado;
+    private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JScrollBar jScrollBar1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel lblCompletados;
+    private javax.swing.JLabel lblMedia;
+    private javax.swing.JLabel lblTotal;
+    private javax.swing.JMenu mnJuegos;
+    private javax.swing.JMenuItem mniSalir;
+    private javax.swing.JPanel panelEstadisticas;
     private javax.swing.JPanel panelFiltros;
     private javax.swing.JTable tablaJuegos;
     // End of variables declaration//GEN-END:variables
