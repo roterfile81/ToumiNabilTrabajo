@@ -3,7 +3,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package es.izquierdofp.retrovault.vista;
-
+import es.izquierdofp.retrovault.datos.JuegoDAO;
+import es.izquierdofp.retrovault.modelo.Juego;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.JOptionPane;
 /**
  *
  * @author 2DAM
@@ -15,10 +19,91 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     /**
      * Creates new form VentanaPrincipal
      */
+    private final JuegoDAO dao = new JuegoDAO();
+    private JuegosTableModel modeloTabla;
     public VentanaPrincipal() {
-        initComponents();
+         initComponents();
+        configurarTabla();
+        configurarPopup();
+        configurarEventos(); // Conectamos todos los botones y menús sin editar el código generado
+        cargarDatos();
+        setLocationRelativeTo(null);
     }
 
+    private void configurarTabla() {
+// Asignamos nuestro modelo personalizado a la tabla
+modeloTabla = new JuegosTableModel(new java.util.ArrayList<>());
+tablaJuegos.setModel(modeloTabla);
+// Aplicamos el renderer de colores a TODAS las columnas
+ConsolaColorRenderer renderer = new ConsolaColorRenderer();
+for (int i = 0; i < tablaJuegos.getColumnCount(); i++) {
+tablaJuegos.getColumnModel().getColumn(i).setCellRenderer(renderer);
+}
+// Anchuras preferidas de cada columna
+tablaJuegos.getColumnModel().getColumn(0).setPreferredWidth(35);
+tablaJuegos.getColumnModel().getColumn(1).setPreferredWidth(200);
+tablaJuegos.getColumnModel().getColumn(2).setPreferredWidth(110);
+tablaJuegos.getColumnModel().getColumn(3).setPreferredWidth(100);
+tablaJuegos.getColumnModel().getColumn(4).setPreferredWidth(50);
+tablaJuegos.getColumnModel().getColumn(5).setPreferredWidth(110);
+tablaJuegos.getColumnModel().getColumn(6).setPreferredWidth(100);
+// Doble clic en una fila abre el diálogo de edición
+tablaJuegos.addMouseListener(new java.awt.event.MouseAdapter() {
+@Override
+public void mouseClicked(java.awt.event.MouseEvent e) {
+if (e.getClickCount() == 2) editarSeleccionado();
+}
+});
+}
+private void configurarPopup() {
+// Asociar el popup al JTable
+tablaJuegos.setComponentPopupMenu(popupTabla);
+// Al hacer clic derecho, seleccionar la fila bajo el cursor
+tablaJuegos.addMouseListener(new java.awt.event.MouseAdapter() {
+@Override
+public void mousePressed(java.awt.event.MouseEvent e) {
+int fila = tablaJuegos.rowAtPoint(e.getPoint());
+if (fila >= 0) tablaJuegos.setRowSelectionInterval(fila, fila);
+}
+});
+
+}
+// Recarga todos los juegos de la BD y actualiza estadísticas
+private void cargarDatos() {
+modeloTabla.setJuegos(dao.obtenerTodos());
+actualizarEstadisticas();
+}
+private void actualizarEstadisticas() {
+int total = dao.contarTotal();
+int comp = dao.contarCompletados();
+double med = dao.puntuacionMedia();
+lblTotal.setText (" Total: " + total);
+lblCompletados.setText(" | Completados: " + comp);
+lblMedia.setText (" | Media: " +
+(total == 0 ? "–" : String.format("%.1f ", med))); 
+}
+private void editarSeleccionado() {
+int fila = tablaJuegos.getSelectedRow();
+if (fila < 0) return;
+Juego j = modeloTabla.getJuego(fila);
+DialogoJuego dlg = new DialogoJuego(this, j);
+dlg.setVisible(true);
+if (dlg.isGuardado()) { dao.actualizar(dlg.getJuego()); cargarDatos(); }
+}
+private void eliminarSeleccionado() {
+int fila = tablaJuegos.getSelectedRow();
+if (fila < 0) return;
+Juego j = modeloTabla.getJuego(fila);
+int r = javax.swing.JOptionPane.showConfirmDialog(this,
+"¿Eliminar \"" + j.getTitulo() + "\" de tu biblioteca?",
+"Confirmar eliminación", javax.swing.JOptionPane.YES_NO_OPTION,
+javax.swing.JOptionPane.WARNING_MESSAGE);
+if (r == javax.swing.JOptionPane.YES_OPTION) {
+dao.eliminar(j.getId()); cargarDatos();
+}
+}
+    
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
