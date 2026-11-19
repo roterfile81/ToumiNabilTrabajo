@@ -82,6 +82,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         tablaJuegos.setGridColor(new java.awt.Color(60, 60, 60));
         tablaJuegos.setRowHeight(26);
         tablaJuegos.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        tablaJuegos.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jScrollPane1.setViewportView(tablaJuegos);
 
         getContentPane().add(jScrollPane1, java.awt.BorderLayout.CENTER);
