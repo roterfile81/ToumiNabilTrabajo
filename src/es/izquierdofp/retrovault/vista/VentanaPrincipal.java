@@ -200,7 +200,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         btnLimpiar.addActionListener(this::btnLimpiarActionPerformed);
         panelFiltros.add(btnLimpiar);
 
-        btnAnyadir.setText("jButton1");
+        btnAnyadir.setText("Añadir");
         btnAnyadir.setActionCommand("+ Añadir");
         btnAnyadir.addActionListener(this::btnAnyadirActionPerformed);
         panelFiltros.add(btnAnyadir);
