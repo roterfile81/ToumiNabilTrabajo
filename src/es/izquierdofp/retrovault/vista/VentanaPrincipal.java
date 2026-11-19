@@ -3,17 +3,19 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package es.izquierdofp.retrovault.vista;
+
 import es.izquierdofp.retrovault.datos.JuegoDAO;
 import es.izquierdofp.retrovault.modelo.Juego;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
+
 /**
  *
  * @author 2DAM
  */
 public class VentanaPrincipal extends javax.swing.JFrame {
-    
+
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(VentanaPrincipal.class.getName());
 
     /**
@@ -21,89 +23,107 @@ public class VentanaPrincipal extends javax.swing.JFrame {
      */
     private final JuegoDAO dao = new JuegoDAO();
     private JuegosTableModel modeloTabla;
+
     public VentanaPrincipal() {
          initComponents();
-        configurarTabla();
-        configurarPopup();
-        configurarEventos(); // Conectamos todos los botones y menús sin editar el código generado
-        cargarDatos();
-        setLocationRelativeTo(null);
+
+    configurarTabla();
+    configurarPopup();
+    cargarDatos();
+
+    setLocationRelativeTo(null);
     }
 
     private void configurarTabla() {
 // Asignamos nuestro modelo personalizado a la tabla
-modeloTabla = new JuegosTableModel(new java.util.ArrayList<>());
-tablaJuegos.setModel(modeloTabla);
+        modeloTabla = new JuegosTableModel(new java.util.ArrayList<>());
+        tablaJuegos.setModel(modeloTabla);
 // Aplicamos el renderer de colores a TODAS las columnas
-ConsolaColorRenderer renderer = new ConsolaColorRenderer();
-for (int i = 0; i < tablaJuegos.getColumnCount(); i++) {
-tablaJuegos.getColumnModel().getColumn(i).setCellRenderer(renderer);
-}
+        ConsolaColorRenderer renderer = new ConsolaColorRenderer();
+        for (int i = 0; i < tablaJuegos.getColumnCount(); i++) {
+            tablaJuegos.getColumnModel().getColumn(i).setCellRenderer(renderer);
+        }
 // Anchuras preferidas de cada columna
-tablaJuegos.getColumnModel().getColumn(0).setPreferredWidth(35);
-tablaJuegos.getColumnModel().getColumn(1).setPreferredWidth(200);
-tablaJuegos.getColumnModel().getColumn(2).setPreferredWidth(110);
-tablaJuegos.getColumnModel().getColumn(3).setPreferredWidth(100);
-tablaJuegos.getColumnModel().getColumn(4).setPreferredWidth(50);
-tablaJuegos.getColumnModel().getColumn(5).setPreferredWidth(110);
-tablaJuegos.getColumnModel().getColumn(6).setPreferredWidth(100);
+        tablaJuegos.getColumnModel().getColumn(0).setPreferredWidth(35);
+        tablaJuegos.getColumnModel().getColumn(1).setPreferredWidth(200);
+        tablaJuegos.getColumnModel().getColumn(2).setPreferredWidth(110);
+        tablaJuegos.getColumnModel().getColumn(3).setPreferredWidth(100);
+        tablaJuegos.getColumnModel().getColumn(4).setPreferredWidth(50);
+        tablaJuegos.getColumnModel().getColumn(5).setPreferredWidth(110);
+        tablaJuegos.getColumnModel().getColumn(6).setPreferredWidth(100);
 // Doble clic en una fila abre el diálogo de edición
-tablaJuegos.addMouseListener(new java.awt.event.MouseAdapter() {
-@Override
-public void mouseClicked(java.awt.event.MouseEvent e) {
-if (e.getClickCount() == 2) editarSeleccionado();
-}
-});
-}
-private void configurarPopup() {
-// Asociar el popup al JTable
-tablaJuegos.setComponentPopupMenu(popupTabla);
-// Al hacer clic derecho, seleccionar la fila bajo el cursor
-tablaJuegos.addMouseListener(new java.awt.event.MouseAdapter() {
-@Override
-public void mousePressed(java.awt.event.MouseEvent e) {
-int fila = tablaJuegos.rowAtPoint(e.getPoint());
-if (fila >= 0) tablaJuegos.setRowSelectionInterval(fila, fila);
-}
-});
+        tablaJuegos.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                if (e.getClickCount() == 2) {
+                    editarSeleccionado();
+                }
+            }
+        });
+    }
 
-}
+    private void configurarPopup() {
+// Asociar el popup al JTable
+        tablaJuegos.setComponentPopupMenu(popupTabla);
+// Al hacer clic derecho, seleccionar la fila bajo el cursor
+        tablaJuegos.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mousePressed(java.awt.event.MouseEvent e) {
+                int fila = tablaJuegos.rowAtPoint(e.getPoint());
+                if (fila >= 0) {
+                    tablaJuegos.setRowSelectionInterval(fila, fila);
+                }
+            }
+        });
+
+    }
 // Recarga todos los juegos de la BD y actualiza estadísticas
-private void cargarDatos() {
-modeloTabla.setJuegos(dao.obtenerTodos());
-actualizarEstadisticas();
-}
-private void actualizarEstadisticas() {
-int total = dao.contarTotal();
-int comp = dao.contarCompletados();
-double med = dao.puntuacionMedia();
-lblTotal.setText (" Total: " + total);
-lblCompletados.setText(" | Completados: " + comp);
-lblMedia.setText (" | Media: " +
-(total == 0 ? "–" : String.format("%.1f ", med))); 
-}
-private void editarSeleccionado() {
-int fila = tablaJuegos.getSelectedRow();
-if (fila < 0) return;
-Juego j = modeloTabla.getJuego(fila);
-DialogoJuego dlg = new DialogoJuego(this, j);
-dlg.setVisible(true);
-if (dlg.isGuardado()) { dao.actualizar(dlg.getJuego()); cargarDatos(); }
-}
-private void eliminarSeleccionado() {
-int fila = tablaJuegos.getSelectedRow();
-if (fila < 0) return;
-Juego j = modeloTabla.getJuego(fila);
-int r = javax.swing.JOptionPane.showConfirmDialog(this,
-"¿Eliminar \"" + j.getTitulo() + "\" de tu biblioteca?",
-"Confirmar eliminación", javax.swing.JOptionPane.YES_NO_OPTION,
-javax.swing.JOptionPane.WARNING_MESSAGE);
-if (r == javax.swing.JOptionPane.YES_OPTION) {
-dao.eliminar(j.getId()); cargarDatos();
-}
-}
-    
-    
+
+    private void cargarDatos() {
+        modeloTabla.setJuegos(dao.obtenerTodos());
+        actualizarEstadisticas();
+    }
+
+    private void actualizarEstadisticas() {
+        int total = dao.contarTotal();
+        int comp = dao.contarCompletados();
+        double med = dao.puntuacionMedia();
+        lblTotal.setText(" Total: " + total);
+        lblCompletados.setText(" | Completados: " + comp);
+        lblMedia.setText(" | Media: "
+                + (total == 0 ? "–" : String.format("%.1f ", med)));
+    }
+
+    private void editarSeleccionado() {
+        int fila = tablaJuegos.getSelectedRow();
+        if (fila < 0) {
+            return;
+        }
+        Juego j = modeloTabla.getJuego(fila);
+        DialogoJuego dlg = new DialogoJuego(this, j);
+        dlg.setVisible(true);
+        if (dlg.isGuardado()) {
+            dao.actualizar(dlg.getJuego());
+            cargarDatos();
+        }
+    }
+
+    private void eliminarSeleccionado() {
+        int fila = tablaJuegos.getSelectedRow();
+        if (fila < 0) {
+            return;
+        }
+        Juego j = modeloTabla.getJuego(fila);
+        int r = javax.swing.JOptionPane.showConfirmDialog(this,
+                "¿Eliminar \"" + j.getTitulo() + "\" de tu biblioteca?",
+                "Confirmar eliminación", javax.swing.JOptionPane.YES_NO_OPTION,
+                javax.swing.JOptionPane.WARNING_MESSAGE);
+        if (r == javax.swing.JOptionPane.YES_OPTION) {
+            dao.eliminar(j.getId());
+            cargarDatos();
+        }
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -162,22 +182,27 @@ dao.eliminar(j.getId()); cargarDatos();
         panelFiltros.add(Consola);
 
         cmbConsola.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Todas", "NES", "SNES", "Mega Drive", "Game Boy", "PlayStation", "Nintendo 64", "Game Gear", "Arcade", " ", " " }));
+        cmbConsola.addActionListener(this::cmbConsolaActionPerformed);
         panelFiltros.add(cmbConsola);
 
         Estado.setText("Estado");
         panelFiltros.add(Estado);
 
         cmbEstado.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Todos", "Pendiente", "Jugando", "Completado", "Abandonado" }));
+        cmbEstado.addActionListener(this::cmbEstadoActionPerformed);
         panelFiltros.add(cmbEstado);
 
         btnFiltrar.setText("Filtrar");
+        btnFiltrar.addActionListener(this::btnFiltrarActionPerformed);
         panelFiltros.add(btnFiltrar);
 
         btnLimpiar.setText("Limpiar");
+        btnLimpiar.addActionListener(this::btnLimpiarActionPerformed);
         panelFiltros.add(btnLimpiar);
 
         btnAnyadir.setText("jButton1");
         btnAnyadir.setActionCommand("+ Añadir");
+        btnAnyadir.addActionListener(this::btnAnyadirActionPerformed);
         panelFiltros.add(btnAnyadir);
 
         getContentPane().add(panelFiltros, java.awt.BorderLayout.PAGE_START);
@@ -217,6 +242,7 @@ dao.eliminar(j.getId()); cargarDatos();
         jMenu1.setText("Archivo");
 
         mniSalir.setText("Salir");
+        mniSalir.addActionListener(this::mniSalirActionPerformed);
         jMenu1.add(mniSalir);
 
         jMenuBar1.add(jMenu1);
@@ -225,15 +251,18 @@ dao.eliminar(j.getId()); cargarDatos();
 
         mniAnyadir.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         mniAnyadir.setText("Añadir Juego...");
+        mniAnyadir.addActionListener(this::mniAnyadirActionPerformed);
         mnJuegos.add(mniAnyadir);
 
         mniEditar.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_E, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         mniEditar.setText("Editar juego...");
+        mniEditar.addActionListener(this::mniEditarActionPerformed);
         mnJuegos.add(mniEditar);
         mnJuegos.add(jSeparator1);
 
         mniEliminar.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_DELETE, 0));
         mniEliminar.setText("Eliminar juego");
+        mniEliminar.addActionListener(this::mniEliminarActionPerformed);
         mnJuegos.add(mniEliminar);
 
         jMenuBar1.add(mnJuegos);
@@ -242,6 +271,7 @@ dao.eliminar(j.getId()); cargarDatos();
 
         mniActualizar.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F5, 0));
         mniActualizar.setText("Actualizar");
+        mniActualizar.addActionListener(this::mniActualizarActionPerformed);
         mnVista.add(mniActualizar);
 
         jMenuBar1.add(mnVista);
@@ -250,6 +280,46 @@ dao.eliminar(j.getId()); cargarDatos();
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void mniSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniSalirActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_mniSalirActionPerformed
+
+    private void mniAnyadirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniAnyadirActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_mniAnyadirActionPerformed
+
+    private void mniEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniEditarActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_mniEditarActionPerformed
+
+    private void mniEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniEliminarActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_mniEliminarActionPerformed
+
+    private void mniActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniActualizarActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_mniActualizarActionPerformed
+
+    private void cmbConsolaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbConsolaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cmbConsolaActionPerformed
+
+    private void cmbEstadoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbEstadoActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cmbEstadoActionPerformed
+
+    private void btnFiltrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFiltrarActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnFiltrarActionPerformed
+
+    private void btnLimpiarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimpiarActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnLimpiarActionPerformed
+
+    private void btnAnyadirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAnyadirActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnAnyadirActionPerformed
 
     /**
      * @param args the command line arguments
